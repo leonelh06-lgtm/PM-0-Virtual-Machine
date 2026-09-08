@@ -32,14 +32,29 @@ Due Date: 9/18/26
 int main(int argc, char* argv[]){
 //Intialize Functions
 int base(int bp, int L);
-//Initialize Memory and Register Values
+//Initialize Memory and pc
 int pas[PAS_SIZE];
 int pc = 200;
+
+FILE* ifp = fopen(argv[1], "r");
+if (ifp == NULL){
+    return 1;
+}
+
+//Loads input file into memory
+while(fscanf(ifp, "%d %d %d", &pas[pc], &pas[pc + 1], &pas[pc + 2]) != EOF){
+    pc+= 3;
+}
+
+//Intialize register values
+pc = 200;
 int bp = 999;
 int sp = 1000;
-FILE* ifp = fopen(argv[1], "r");
-if (ifp == NULL)
-    return 1;
+
+//Take initial instructions from file
+int op = pas[pc];
+int l = pas[pc + 1];
+int m = pas[pc + 2];
 
 
 fclose(ifp);
