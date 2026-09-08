@@ -3,9 +3,5 @@
 #include <stdlib.h>
 int main(int argc, char* argv[]){
 int PAS[999];
-for(int i = 0; i<5; i++){
-    printf("Hello World");
-}
-
     return 0;
 }
