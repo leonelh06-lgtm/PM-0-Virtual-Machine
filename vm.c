@@ -30,43 +30,266 @@ Due Date: 9/18/26
 #include <stdio.h>
 #include <stdlib.h>
 int main(int argc, char* argv[]){
-//Intialize Functions
-int base(int bp, int L);
-//Initialize Memory and pc
-int pas[PAS_SIZE];
-int pc = 200;
+    //Intialize Functions
+    int base(int bp, int L);
+    //Initialize Memory and pc
+    int pas[PAS_SIZE];
+    int instCount = 0;
+    int pc = 200;
+    int halt = 0;
 
-FILE* ifp = fopen(argv[1], "r");
-if (ifp == NULL){
-    return 1;
-}
+    FILE* ifp = fopen(argv[1], "r");
+    if (ifp == NULL){
+        return 1;
+    }
 
-//Loads input file into memory
-while(fscanf(ifp, "%d %d %d", &pas[pc], &pas[pc + 1], &pas[pc + 2]) != EOF){
-    pc+= 3;
-}
+    //Loads input file into memory
+    while(fscanf(ifp, "%d %d %d", &pas[pc], &pas[pc + 1], &pas[pc + 2]) == 3){
+        pc+= 3;
+        instCount++;
+    }
 
-//Intialize register values
-pc = 200;
-int bp = 999;
-int sp = 1000;
+    //Maximum adress that the stack can reach (Due to limitations from the text segment)
+    int stackSpaceMax = 200 + (instCount * 3);
 
-//Take initial instructions from file
-int op = pas[pc];
-int l = pas[pc + 1];
-int m = pas[pc + 2];
+    //Checks if the program is too large for the text segment
+    if(instCount > 266){
+        printf("\nError: program too large for the text segment\n");
+        return 1;
+    }
+
+    //Intialize register values
+    pc = 200;
+    int bp = 999;
+    int sp = 1000;
+
+    while(halt == 0){
 
 
-fclose(ifp);
+        //Take initial instructions from file
+        int op = pas[pc];
+        int l = pas[pc + 1];
+        int m = pas[pc + 2];
+
+        //Conditional statements for each instruction
+
+        if(op >9 || op < 1){
+            printf("\nError: unknown opcode\n");
+            return 1;
+        }
+        //Increment Program Counter
+        pc += 3;
+
+        //LIT(Literal) (Push M onto the stack)
+        if(op == 1){
+            sp--;
+            if(sp < stackSpaceMax){
+                printf("\nError: stack overflow\n");
+                return 1;
+            }
+            pas[sp] = m;
+        }
+
+        //OPR(Operation) (Performs sub operation depending on M)
+        //For arithmetic operations, the top two elements of the stack are popped and the result is pushed back onto the stack(a = pas[sp], b = pas[sp + 1])
+        if(op == 2){
+
+            if(m > 9 || m < 0){
+                printf("\nError: unknown OPR sub-operation\n");
+                return 1;
+            }
+
+            //RTN(Return) Returns procedure and restores callers record
+            if(m == 0){
+                sp = bp +1;
+                bp = pas[sp-2];
+                pc = pas[sp-3];
+            }
+
+
+            //ADD(Addition) Adds the top two elements of the stack and pushes the result back onto the stack
+            if(m == 1){
+                pas[sp+1] = pas[sp+1] + pas[sp];
+                sp++;
+            }
+
+            //SUB(Subtraction) Subtracts the top two elements of the stack and pushes the result back onto the stack
+            if(m == 2){
+                pas[sp+1] = pas[sp+1] - pas[sp];
+                sp++;
+            }
+            
+            //MUL(Multiplication) Multiplies the top two elements of the stack and pushes the result back onto the stack
+            if(m == 3){
+                pas[sp+1] = pas[sp+1] * pas[sp];
+                sp++;
+            }
+
+            //DIV(Division) Divides the top two elements of the stack and pushes the result back onto the stack
+            if(m == 4){
+                //Division by zero check
+                if(pas[sp] == 0){
+                    printf("\nError: division by zero\n");
+                    return 1;
+                }
+                pas[sp+1] = pas[sp+1] / pas[sp];
+                sp++;
+            }
+
+            //EQL(Equality) Compares the top two elements of the stack and pushes 1 if they are equal, 0 otherwise
+            if(m == 5){
+                if(pas[sp+1] == pas[sp]){
+                    pas[sp+1] = 1;
+                } else {
+                    pas[sp+1] = 0;
+                }
+                sp++;
+            }
+
+            //NEQ(Not Equal) Compares the top two elements of the stack and pushes 1 if they are not equal, 0 otherwise
+            if(m ==6){
+                if(pas[sp+1] != pas[sp]){
+                    pas[sp+1] = 1;
+                } else {
+                    pas[sp+1] = 0;
+                }
+                sp++;
+            }
+
+            //LSS(Less Than) Compares the top two elements of the stack and pushes 1 if the second element is less than the first, 0 otherwise
+            if(m == 7){
+                if(pas[sp+1] < pas[sp]){
+                    pas[sp+1] = 1;
+                } else {
+                    pas[sp+1] = 0;
+                }
+                sp++;
+            }
+
+            //LEQ(Less Than or Equal) Compares the top two elements of the stack and pushes 1 if the second element is less than or equal to the first, 0 otherwise
+            if(m ==8){
+                if(pas[sp+1] <= pas[sp]){
+                    pas[sp+1] = 1;
+                } else {
+                    pas[sp+1] = 0;
+                }
+                sp++;
+            }
+                
+            //GTR(Greater Than) Compares the top two elements of the stack and pushes 1 if the second element is greater than the first, 0 otherwise
+            if(m == 9){
+                if(pas[sp+1] > pas[sp]){
+                    pas[sp+1] = 1;
+                } else {
+                    pas[sp+1] = 0;
+                }
+                sp++;
+            }
+
+            //GEQ(Greater Than or Equal) Compares the top two elements of the stack and pushes 1 if the second element is greater than or equal to the first, 0 othwerwise
+            if(m == 10){
+                if(pas[sp+1] >= pas[sp]){
+                    pas[sp+1] = 1;
+                } else {
+                    pas[sp+1] = 0;
+                }
+                sp++;
+            }
+
+
+        }
+
+        //LOD(Load) Pushes the value stored at base(BP, L) - M onto the stack
+        if(op == 3){
+        sp--;
+        if(sp < stackSpaceMax){
+            printf("\nError: stack overflow\n");
+            return 1;
+            }
+        pas[sp] = pas[base(pas, bp, l) - m];
+        }
+
+        //STO(Store) Pops value stored at the top of the stack and stores it in the variable at base(BP, L) - M
+        if(op == 4){
+            pas[base(pas, bp, l) - m] = pas[sp];
+            sp++;
+        }
+
+        //CAL(Call) Builds activation record and call the procedure at adress M
+        if(op == 5){
+            pas[sp-1] = base(pas, bp, l); //(Static Link) Always resolves lexiographic level
+            pas[sp-2] = bp; //(Dynamic Link) Follows the current activation record
+            pas[sp-3] = pc; //(Return Address) Stores where to return after the function is done running
+            bp = sp - 1; //(Activation Record) Sets the base pointer to the top of the stack to create a new frame for the function
+            pc = m; //(Jump) Goes to the beggining of the function to start executing it
+        }
+
+        //INC (Increment) Allocates M words on the stack
+        if(op == 6){
+            sp = sp - m;
+            if(sp < stackSpaceMax){
+                printf("\nError: stack overflow\n");
+                return 1;
+            }
+        }
+
+        //JMP(Jump) Jumps to the address M
+        if(op == 7){
+            pc = m; //Sets next instruction to adress M
+        }
+
+        //JPC(Jump Conditional) Pop the top of the stack and if 0 jump to the address M
+        if(op == 8){
+            if(pas[sp] == 0){
+                pc = m; //Sets next instruction to adress M
+            }
+            sp++;
+        }
+
+        //SYS(System) Performs the system operation selected by M
+        if(op == 9){
+            if(m > 3 || m < 1){
+                printf("\nError: unknown SYS operation\n");
+                return 1;
+            }
+
+            //Write pop and print the top of the stack
+            if(m == 1){
+                printf("%d\n", pas[sp]);
+                sp++;
+            }
+            
+            //Read pushes prompted user input to top of the stack
+            if(m == 2){
+                int input;
+                printf("Enter an Integer: ");
+                scanf("%d", &input);
+                sp--;
+                if(sp < stackSpaceMax){
+                    printf("\nError: stack overflow\n");
+                    return 1;
+            }
+                pas[sp] = input;
+            }
+
+            //Halt stops the program and exits with status 0
+            if(m == 3){
+                halt = 1;
+            }
+        }
+
+    }  
+
+    fclose(ifp);
     return 0;
 }
 
-int base(int* pas, int bp, int L)
-{
+//Scope Resolver that returns base of the Lth lexiographic Level
+int base(int* pas, int bp, int L){
 int arb = bp;
 while (L > 0) {
-arb = pas[arb];
-L--;
+    arb = pas[arb];
+    L--;
 }
 return arb;
 }
