@@ -30,7 +30,7 @@ Due Date: 9/18/26
 #include <stdio.h>
 #include <stdlib.h>
 int base(int pas[], int bp, int L);
-int main(char* argv[]){
+int main(int argc, char* argv[]){
     //Intialize Functions
     //Initialize Memory and pc
     int pas[PAS_SIZE];
