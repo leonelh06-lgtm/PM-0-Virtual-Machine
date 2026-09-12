@@ -201,17 +201,28 @@ int main(int argc, char* argv[]){
 
         //LOD(Load) Pushes the value stored at base(BP, L) - M onto the stack
         if(op == 3){
-        sp--;
         if(sp < stackSpaceMax){
             printf("\nError: stack overflow\n");
             return 1;
             }
-        pas[sp] = pas[base(pas, bp, l) - m];
+        
+        int target = base(pas, bp, l) - m;
+        if(target < sp || target > 999){
+            printf("\nError: data address out of range\n");
+            return 1;
+        }
+        sp--;
+        pas[sp] = pas[target];
         }
 
         //STO(Store) Pops value stored at the top of the stack and stores it in the variable at base(BP, L) - M
         if(op == 4){
-            pas[base(pas, bp, l) - m] = pas[sp];
+            int target = base(pas, bp, l) - m;
+            if(target < sp || target > 999){
+                printf("\nError: data address out of range\n");
+                return 1;
+        }
+            pas[target] = pas[sp];
             sp++;
         }
 
