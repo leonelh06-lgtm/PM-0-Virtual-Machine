@@ -29,9 +29,9 @@ Due Date: 9/18/26
 #define PAS_SIZE 1000
 #include <stdio.h>
 #include <stdlib.h>
-int main(int argc, char* argv[]){
+int base(int pas[], int bp, int L);
+int main(char* argv[]){
     //Intialize Functions
-    int base(int bp, int L);
     //Initialize Memory and pc
     int pas[PAS_SIZE];
     int instCount = 0;
@@ -207,6 +207,7 @@ int main(int argc, char* argv[]){
             }
         
         int target = base(pas, bp, l) - m;
+
         if(target < sp || target > 999){
             printf("\nError: data address out of range\n");
             return 1;
@@ -296,7 +297,7 @@ int main(int argc, char* argv[]){
 }
 
 //Scope Resolver that returns base of the Lth lexiographic Level
-int base(int* pas, int bp, int L){
+int base(int pas[], int bp, int L){
 int arb = bp;
 while (L > 0) {
     arb = pas[arb];
