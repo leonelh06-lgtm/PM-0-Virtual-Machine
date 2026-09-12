@@ -63,6 +63,9 @@ int main(int argc, char* argv[]){
     int bp = 999;
     int sp = 1000;
 
+    //Header line for the output
+    printf("\tL\tM\tPC\tBP\tSP\tStack\n");
+    printf("Initial values:\t\t%d\t%d\t%d\t\n", pc, bp, sp);
     while(halt == 0){
 
 
@@ -88,6 +91,8 @@ int main(int argc, char* argv[]){
                 return 1;
             }
             pas[sp] = m;
+            printf("LIT\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+           
         }
 
         //OPR(Operation) (Performs sub operation depending on M)
@@ -104,6 +109,8 @@ int main(int argc, char* argv[]){
                 sp = bp +1;
                 bp = pas[sp-2];
                 pc = pas[sp-3];
+                printf("RTN\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+                
             }
 
 
@@ -111,18 +118,24 @@ int main(int argc, char* argv[]){
             if(m == 1){
                 pas[sp+1] = pas[sp+1] + pas[sp];
                 sp++;
+                printf("ADD\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+                
             }
 
             //SUB(Subtraction) Subtracts the top two elements of the stack and pushes the result back onto the stack
             if(m == 2){
                 pas[sp+1] = pas[sp+1] - pas[sp];
                 sp++;
+                printf("SUB\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+                
             }
             
             //MUL(Multiplication) Multiplies the top two elements of the stack and pushes the result back onto the stack
             if(m == 3){
                 pas[sp+1] = pas[sp+1] * pas[sp];
                 sp++;
+                printf("MUL\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+               
             }
 
             //DIV(Division) Divides the top two elements of the stack and pushes the result back onto the stack
@@ -134,6 +147,8 @@ int main(int argc, char* argv[]){
                 }
                 pas[sp+1] = pas[sp+1] / pas[sp];
                 sp++;
+                printf("DIV\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+                
             }
 
             //EQL(Equality) Compares the top two elements of the stack and pushes 1 if they are equal, 0 otherwise
@@ -144,6 +159,8 @@ int main(int argc, char* argv[]){
                     pas[sp+1] = 0;
                 }
                 sp++;
+                printf("EQL\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+                
             }
 
             //NEQ(Not Equal) Compares the top two elements of the stack and pushes 1 if they are not equal, 0 otherwise
@@ -154,6 +171,8 @@ int main(int argc, char* argv[]){
                     pas[sp+1] = 0;
                 }
                 sp++;
+                printf("NEQ\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+                
             }
 
             //LSS(Less Than) Compares the top two elements of the stack and pushes 1 if the second element is less than the first, 0 otherwise
@@ -164,6 +183,8 @@ int main(int argc, char* argv[]){
                     pas[sp+1] = 0;
                 }
                 sp++;
+                printf("LSS\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+                
             }
 
             //LEQ(Less Than or Equal) Compares the top two elements of the stack and pushes 1 if the second element is less than or equal to the first, 0 otherwise
@@ -174,6 +195,8 @@ int main(int argc, char* argv[]){
                     pas[sp+1] = 0;
                 }
                 sp++;
+                printf("LEQ\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+                
             }
                 
             //GTR(Greater Than) Compares the top two elements of the stack and pushes 1 if the second element is greater than the first, 0 otherwise
@@ -184,6 +207,8 @@ int main(int argc, char* argv[]){
                     pas[sp+1] = 0;
                 }
                 sp++;
+                printf("GTR\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+               
             }
 
             //GEQ(Greater Than or Equal) Compares the top two elements of the stack and pushes 1 if the second element is greater than or equal to the first, 0 othwerwise
@@ -194,6 +219,8 @@ int main(int argc, char* argv[]){
                     pas[sp+1] = 0;
                 }
                 sp++;
+                printf("GEQ\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+                
             }
 
 
@@ -214,6 +241,8 @@ int main(int argc, char* argv[]){
         }
         sp--;
         pas[sp] = pas[target];
+        printf("LOD\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+       
         }
 
         //STO(Store) Pops value stored at the top of the stack and stores it in the variable at base(BP, L) - M
@@ -225,6 +254,8 @@ int main(int argc, char* argv[]){
         }
             pas[target] = pas[sp];
             sp++;
+            printf("STO\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+           
         }
 
         //CAL(Call) Builds activation record and call the procedure at adress M
@@ -234,6 +265,8 @@ int main(int argc, char* argv[]){
             pas[sp-3] = pc; //(Return Address) Stores where to return after the function is done running
             bp = sp - 1; //(Activation Record) Sets the base pointer to the top of the stack to create a new frame for the function
             pc = m; //(Jump) Goes to the beggining of the function to start executing it
+            printf("CAL\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+           
         }
 
         //INC (Increment) Allocates M words on the stack
@@ -243,11 +276,15 @@ int main(int argc, char* argv[]){
                 printf("\nError: stack overflow\n");
                 return 1;
             }
+            printf("INC\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+            
         }
 
         //JMP(Jump) Jumps to the address M
         if(op == 7){
             pc = m; //Sets next instruction to adress M
+            printf("JMP\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+            
         }
 
         //JPC(Jump Conditional) Pop the top of the stack and if 0 jump to the address M
@@ -256,6 +293,8 @@ int main(int argc, char* argv[]){
                 pc = m; //Sets next instruction to adress M
             }
             sp++;
+            printf("JPC\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+            
         }
 
         //SYS(System) Performs the system operation selected by M
@@ -264,10 +303,11 @@ int main(int argc, char* argv[]){
                 printf("\nError: unknown SYS operation\n");
                 return 1;
             }
+    
 
             //Write pop and print the top of the stack
             if(m == 1){
-                printf("%d\n", pas[sp]);
+                printf("Output result is: %d\n", pas[sp]);
                 sp++;
             }
             
@@ -288,6 +328,8 @@ int main(int argc, char* argv[]){
             if(m == 3){
                 halt = 1;
             }
+            printf("SYS\t%d\t%d\t%d\t%d\t%d\n", l, m, pc, bp, sp);
+            
         }
 
     }  
