@@ -34,7 +34,7 @@ void printStack(int pas[], int sp, int start);
 int main(int argc, char* argv[]){
     //Intialize Functions
     //Initialize Memory and pc
-    int pas[PAS_SIZE];
+    int pas[PAS_SIZE] = {0};
     int instCount = 0;
     int pc = 200;
     int halt = 0;
@@ -75,6 +75,10 @@ int main(int argc, char* argv[]){
     printf("Initial values:\t\t%d\t%d\t%d\t\n", pc, bp, sp);
     while(halt == 0){
 
+        if (pc < 200 || pc >= stackSpaceMax) {
+            printf("\nError: program counter left the text segment\n");
+            return 1;
+        }
 
         //Take initial instructions from file
         int op = pas[pc];
@@ -83,7 +87,7 @@ int main(int argc, char* argv[]){
 
         //Conditional statements for each instruction
 
-        if(op >9 || op < 1){
+        if(op > 9 || op < 1){
             printf("\nError: unknown opcode\n");
             return 1;
         }
@@ -99,7 +103,7 @@ int main(int argc, char* argv[]){
             }
             pas[sp] = m;
             printf("LIT\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-            printStack(pas, sp, 999);
+            printStack(pas, sp, bp);
            
         }
 
@@ -118,7 +122,7 @@ int main(int argc, char* argv[]){
                 bp = pas[sp-2];
                 pc = pas[sp-3];
                 printf("RTN\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-                printStack(pas, sp, 999);
+                printStack(pas, sp, bp);
             }
 
 
@@ -127,7 +131,7 @@ int main(int argc, char* argv[]){
                 pas[sp+1] = pas[sp+1] + pas[sp];
                 sp++;
                 printf("ADD\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-                printStack(pas, sp, 999);
+                printStack(pas, sp, bp);
             }
 
             //SUB(Subtraction) Subtracts the top two elements of the stack and pushes the result back onto the stack
@@ -135,7 +139,7 @@ int main(int argc, char* argv[]){
                 pas[sp+1] = pas[sp+1] - pas[sp];
                 sp++;
                 printf("SUB\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-                printStack(pas, sp, 999);
+                printStack(pas, sp, bp);
             }
             
             //MUL(Multiplication) Multiplies the top two elements of the stack and pushes the result back onto the stack
@@ -143,7 +147,7 @@ int main(int argc, char* argv[]){
                 pas[sp+1] = pas[sp+1] * pas[sp];
                 sp++;
                 printf("MUL\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-                printStack(pas, sp, 999);
+                printStack(pas, sp, bp);
             }
 
             //DIV(Division) Divides the top two elements of the stack and pushes the result back onto the stack
@@ -156,7 +160,7 @@ int main(int argc, char* argv[]){
                 pas[sp+1] = pas[sp+1] / pas[sp];
                 sp++;
                 printf("DIV\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-                printStack(pas, sp, 999);
+                printStack(pas, sp, bp);
             }
 
             //EQL(Equality) Compares the top two elements of the stack and pushes 1 if they are equal, 0 otherwise
@@ -168,7 +172,7 @@ int main(int argc, char* argv[]){
                 }
                 sp++;
                 printf("EQL\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-                printStack(pas, sp, 999);
+                printStack(pas, sp, bp);
             }
 
             //NEQ(Not Equal) Compares the top two elements of the stack and pushes 1 if they are not equal, 0 otherwise
@@ -180,7 +184,7 @@ int main(int argc, char* argv[]){
                 }
                 sp++;
                 printf("NEQ\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-                printStack(pas, sp, 999);
+                printStack(pas, sp, bp);
             }
 
             //LSS(Less Than) Compares the top two elements of the stack and pushes 1 if the second element is less than the first, 0 otherwise
@@ -192,7 +196,7 @@ int main(int argc, char* argv[]){
                 }
                 sp++;
                 printf("LSS\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-                printStack(pas, sp, 999);
+                printStack(pas, sp, bp);
             }
 
             //LEQ(Less Than or Equal) Compares the top two elements of the stack and pushes 1 if the second element is less than or equal to the first, 0 otherwise
@@ -204,7 +208,7 @@ int main(int argc, char* argv[]){
                 }
                 sp++;
                 printf("LEQ\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-                printStack(pas, sp, 999);
+                printStack(pas, sp, bp);
             }
                 
             //GTR(Greater Than) Compares the top two elements of the stack and pushes 1 if the second element is greater than the first, 0 otherwise
@@ -216,7 +220,7 @@ int main(int argc, char* argv[]){
                 }
                 sp++;
                 printf("GTR\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-                printStack(pas, sp, 999);
+                printStack(pas, sp, bp);
             }
 
             //GEQ(Greater Than or Equal) Compares the top two elements of the stack and pushes 1 if the second element is greater than or equal to the first, 0 othwerwise
@@ -228,7 +232,7 @@ int main(int argc, char* argv[]){
                 }
                 sp++;
                 printf("GEQ\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-                printStack(pas, sp, 999);
+                printStack(pas, sp, bp);
             }
 
 
@@ -250,7 +254,7 @@ int main(int argc, char* argv[]){
         sp--;
         pas[sp] = pas[target];
         printf("LOD\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-        printStack(pas, sp, 999);
+        printStack(pas, sp, bp);
         }
 
         //STO(Store) Pops value stored at the top of the stack and stores it in the variable at base(BP, L) - M
@@ -263,7 +267,7 @@ int main(int argc, char* argv[]){
             pas[target] = pas[sp];
             sp++;
             printf("STO\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-            printStack(pas, sp, 999);
+            printStack(pas, sp, bp);
         }
 
         //CAL(Call) Builds activation record and call the procedure at adress M
@@ -274,7 +278,7 @@ int main(int argc, char* argv[]){
             bp = sp - 1; //(Activation Record) Sets the base pointer to the top of the stack to create a new frame for the function
             pc = m; //(Jump) Goes to the beggining of the function to start executing it
             printf("CAL\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-            printStack(pas, sp, 999);
+            printStack(pas, sp, bp);
         }
 
         //INC (Increment) Allocates M words on the stack
@@ -285,14 +289,18 @@ int main(int argc, char* argv[]){
                 return 1;
             }
             printf("INC\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-            printStack(pas, sp, 999);
+            printStack(pas, sp, bp);
         }
 
         //JMP(Jump) Jumps to the address M
         if(op == 7){
             pc = m; //Sets next instruction to adress M
+            if(pc < 200 || pc > 999){
+                printf("\nError: program counter left the text segment\n");
+                return 1;
+            }
             printf("JMP\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-            printStack(pas, sp, 999);
+            printStack(pas, sp, bp);
         }
 
         //JPC(Jump Conditional) Pop the top of the stack and if 0 jump to the address M
@@ -302,7 +310,7 @@ int main(int argc, char* argv[]){
             }
             sp++;
             printf("JPC\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-            printStack(pas, sp, 999);
+            printStack(pas, sp, bp);
             
         }
 
@@ -323,8 +331,9 @@ int main(int argc, char* argv[]){
             //Read pushes prompted user input to top of the stack
             if(m == 2){
                 int input;
-                printf("Enter an Integer: ");
+                printf("Please Enter an Integer: ");
                 scanf("%d", &input);
+                printf("%d\n", input);
                 sp--;
                 if(sp < stackSpaceMax){
                     printf("\nError: stack overflow\n");
@@ -338,7 +347,7 @@ int main(int argc, char* argv[]){
                 halt = 1;
             }
             printf("SYS\t%d\t%d\t%d\t%d\t%d\t", l, m, pc, bp, sp);
-            printStack(pas, sp, 999);
+            printStack(pas, sp, bp);
         }
 
     }  
@@ -357,11 +366,28 @@ while (L > 0) {
 return arb;
 }
 
-void printStack(int pas[], int sp, int start){
-
-    while(start >= sp){
-        printf("\t%d ", pas[start]);
-        start--;
+void printStack(int pas[], int sp, int bp) {
+    int i;
+    //Iterates from bottom of stack to top
+    for (i = 999; i >= sp; i--) {
+        //Walks dynamic chain to seperate activation records with a "|"
+        
+        int isARbound = 0;
+        int arCurr = bp;
+        while(arCurr != 999){
+            //Checks when index is at a base pointer (base of AR)
+            if(i == arCurr){
+                isARbound = 1;
+                break;
+            }
+            //Goes to dynamic link of Activation Record Frame
+            arCurr = pas[arCurr - 1];
+        }
+        //Prints a "|" if the current index is at a base pointer (base of AR)
+        if(isARbound == 1){
+            printf("| ");
+        }
+        printf("%d\t", pas[i]);
     }
     printf("\n");
 }
